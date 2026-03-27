@@ -314,6 +314,23 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);heigh
             }
           },
           {
+            npcText: "",
+            npcNameOverride: "Direktor Berger", npcAvatarOverride: "\uD83D\uDC68\u200D\uD83D\uDCBC",
+            placeholder: "Gr\u00FC\u00DF Gott! / Guten Tag! / ...",
+            baseChips: ["Guten", "Tag", "Morgen"],
+            hintChips: ["Gr\u00FC\u00DF", "Gott"],
+            narrateBefore: "Die T\u00FCr zur Direktion geht auf. Ein Mann im Anzug kommt heraus.",
+            npcTextFn: function() { return "Ah, du bist bestimmt " + player.firstName + "! Herzlich willkommen an unserer Schule. Gr\u00FC\u00DF Gott!"; },
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if (/gr\u00FC\u00DF\s*gott|guten\s*tag|guten\s*morgen/.test(low)) return { pass: true };
+              if (/\b(hallo|hi|hey|servus|moin|na|yo|sup)\b/.test(low)) {
+                return { pass: false, npcReply: "", secretaryHelp: true };
+              }
+              return { pass: false, npcReply: "Sag zum Beispiel: Gr\u00FC\u00DF Gott! oder Guten Tag!" };
+            }
+          },
+          {
             npcText: "Sehr gut! Dein Klassenraum ist im ersten Stock. Geh die Treppe hoch und dann links. Alles klar?",
             placeholder: "Ja / Danke / ...",
             baseChips: ["Ja", "Danke", "Alles klar"],
@@ -439,7 +456,138 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);heigh
           return "Die Schulglocke l\u00E4utet. Pause! Mia geht raus. Du bleibst im Klassenzimmer.";
         },
         branch: true
-      }
+      },
+      // SCENE 5: Turnsaal
+      {
+        emoji: "\uD83E\uDD3E", label: "Szene 5: Im Turnsaal",
+        npcName: "Herr Gruber", npcAvatar: "\uD83D\uDC68\u200D\uD83E\uDDB1",
+        intro: "Ihr geht zusammen in den Turnsaal. Ein sportlicher Lehrer steht in der Halle.",
+        steps: [
+          {
+            npcText: function() { return "Hallo! Ich bin Herr Gruber, euer Turnlehrer. Du bist neu, oder? Wie hei\u00DFt du?"; },
+            placeholder: "Ich bin... / Ich hei\u00DFe...",
+            baseChips: ["Ich", "bin", "hei\u00DFe"],
+            hintChips: [player.firstName],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if (low.indexOf(player.firstName.toLowerCase()) !== -1) return { pass: true };
+              return { pass: false, npcReply: "Sag mir deinen Namen! Ich bin ... oder Ich hei\u00DFe ..." };
+            }
+          },
+          {
+            npcText: function() { return "Heute spielen wir ein Spiel, " + player.firstName + ". Welches Spiel kennst du?"; },
+            placeholder: "Fu\u00DFball / Ich wei\u00DF nicht / ...",
+            baseChips: ["Ich", "kenne"],
+            hintChips: ["Fu\u00DFball", "Basketball", "Volleyball", "Fangen", "wei\u00DF nicht", "verstehe nicht"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              var spiele = ["fu\u00DFball","basketball","volleyball","tennis","handball","tischtennis","badminton","fangen","verstecken"];
+              for (var i = 0; i < spiele.length; i++) { if (low.indexOf(spiele[i]) !== -1) return { pass: true, npcReply: "Ah, " + input.trim() + "! Das ist super! \uD83D\uDE0A" }; }
+              if (/wei\u00DF\s*nicht|kenn.*nicht|keine?\s*ahnung|nicht\s*sicher/.test(low)) {
+                return { pass: true, npcReply: "Kein Problem! Schau einfach zu und mach mit. Du lernst das schnell!" };
+              }
+              if (/versteh.*nicht|was\s*ist|was\s*bedeutet/.test(low)) {
+                return { pass: true, npcReply: "Kein Problem! Schau einfach zu und mach mit. Du lernst das schnell!" };
+              }
+              if (low.length >= 2) return { pass: true, npcReply: "Okay! Schau einfach zu und mach mit. Du lernst das schnell!" };
+              return { pass: false, npcReply: "Sag ein Spiel das du kennst, oder sag: Ich wei\u00DF nicht." };
+            }
+          },
+          {
+            npcText: "",
+            placeholder: "",
+            baseChips: [],
+            hintChips: [],
+            autoPass: true,
+            npcTextFn: function() { return "Super! Dann los!"; },
+            afterPass: function() {
+              return [
+                { type: "narr", text: "Herr Gruber pfeift. Die Kinder spielen. Du machst mit!" },
+                { type: "narr", text: "\uD83C\uDFC3 Nach dem Spiel holt Herr Gruber einen Fu\u00DFball." },
+                { type: "npc", name: "Herr Gruber", avatar: "\uD83D\uDC68\u200D\uD83E\uDDB1", text: "So! Jetzt spielen wir noch Fu\u00DFball. Aber zuerst \u2014" }
+              ];
+            }
+          },
+          {
+            npcText: function() { return "Schau mal, " + player.firstName + "! \u26BD Was ist das? Wie hei\u00DFt das?"; },
+            placeholder: "Ball / ein Ball / ...",
+            baseChips: ["ein", "der", "Ball"],
+            hintChips: ["Fu\u00DFball", "das ist"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if (/\b(ball|fu\u00DFball)\b/.test(low)) return { pass: true, npcReply: "Genau! Das ist ein Ball! \u26BD Sehr gut!" };
+              return { pass: false, npcReply: "Das ist ein Ball. Wiederhole: ein Ball." };
+            }
+          }
+        ],
+        outro: "Herr Gruber pfeift. Fu\u00DFball! Die Kinder spielen und lachen. \u26BD",
+        afterOutro: function() {
+          return [
+            { type: "narr", text: "Die Turnstunde ist vorbei. Alle gehen zur\u00FCck ins Klassenzimmer." },
+            { type: "npc", name: "Mia", avatar: "\uD83D\uDC67", text: "Jetzt haben wir noch Mathe. Frau Horvath ist nett, keine Sorge!" }
+          ];
+        }
+      },
+      // SCENE 6: Mathematik
+      (function() {
+        var zahlWort = ["","eins","zwei","drei","vier","f\u00FCnf","sechs","sieben","acht","neun","zehn","elf","zw\u00F6lf","dreizehn","vierzehn","f\u00FCnfzehn","sechzehn","siebzehn","achtzehn","neunzehn","zwanzig","einundzwanzig"];
+        // Pick 9 random unique numbers from 1-21
+        var pool = [];
+        for (var i = 1; i <= 21; i++) pool.push(i);
+        for (var i = pool.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+        }
+        var aufgaben = pool.slice(0, 9);
+
+        function makeStep(zahl, idx) {
+          var wort = zahlWort[zahl];
+          var prefix = idx === 0
+            ? "Gut! Erste Aufgabe: Schreib die Zahl als Wort. \u270D\uFE0F Wie schreibt man " + zahl + "?"
+            : "Wie schreibt man " + zahl + "?";
+          return {
+            npcText: prefix,
+            placeholder: zahl + " = ...",
+            baseChips: [],
+            hintChips: [],
+            check: function(input) {
+              var low = input.toLowerCase().trim().replace(/\u00DF/g, "ss");
+              var target = wort.replace(/\u00DF/g, "ss").replace(/\u00FC/g, "ue").replace(/\u00F6/g, "oe");
+              var inputNorm = low.replace(/\u00FC/g, "ue").replace(/\u00F6/g, "oe");
+              if (inputNorm.indexOf(target) !== -1) return { pass: true };
+              // Also accept original form with umlauts
+              if (low.indexOf(wort) !== -1) return { pass: true };
+              return { pass: false, npcReply: zahl + " schreibt man: " + wort + ". Schreib es ab: " + wort };
+            }
+          };
+        }
+
+        var steps = [
+          {
+            npcText: function() { return "Guten Tag! Ich bin Frau Horvath. Du bist " + player.firstName + ", richtig? Sch\u00F6n, dass du da bist!"; },
+            placeholder: "",
+            baseChips: [],
+            hintChips: [],
+            autoPass: true,
+            afterPass: function() {
+              return [
+                { type: "narr", text: "Frau Horvath teilt Arbeitsbl\u00E4tter aus." },
+                { type: "npc", name: "Frau Horvath", avatar: "\uD83D\uDC69\u200D\uD83D\uDD2C", text: "Heute \u00FCben wir Zahlen. " + player.firstName + ", wir schauen mal wie gut du Zahlen schreiben kannst!" }
+              ];
+            }
+          }
+        ];
+        for (var i = 0; i < aufgaben.length; i++) {
+          steps.push(makeStep(aufgaben[i], i));
+        }
+        return {
+          emoji: "\uD83D\uDCDD", label: "Szene 6: Mathematik",
+          npcName: "Frau Horvath", npcAvatar: "\uD83D\uDC69\u200D\uD83D\uDD2C",
+          intro: "Zur\u00FCck im Klassenzimmer. Eine freundliche Lehrerin steht an der Tafel.",
+          steps: steps,
+          outro: function() { return "Frau Horvath l\u00E4chelt. \u201ESehr gut, " + player.firstName + "! Du kannst schon toll Zahlen schreiben!\u201C"; }
+        };
+      })()
     ];
   }
 
@@ -505,7 +653,15 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);heigh
             }
           }
         ],
-        outro: function() { return "Die Glocke l\u00E4utet. Pause vorbei! Leon ruft: \u201EBis morgen, " + player.firstName + "!\u201C Dein erster Tag ist geschafft!"; }
+        outro: function() {
+          return "Die Glocke l\u00E4utet. Pause vorbei!";
+        },
+        afterOutro: function() {
+          return [
+            { type: "npc", name: "Leon", avatar: "\uD83D\uDC66", text: "Jetzt haben wir Turnen! Komm, wir gehen in den Turnsaal!" },
+            { type: "npc", name: "Mia", avatar: "\uD83D\uDC67", text: "Ja, komm " + player.firstName + "! Ich zeig dir wo der Turnsaal ist." }
+          ];
+        }
       };
     } else {
       // SCENE 4b: Klasse — Frau Novak
@@ -553,7 +709,15 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);heigh
             }
           }
         ],
-        outro: function() { return "Frau Novak l\u00E4chelt. \u201EDu machst das gut, " + player.firstName + "! Ich freue mich auf den Unterricht mit dir.\u201C Dein erster Tag ist geschafft!"; }
+        outro: function() {
+          return "Die Glocke l\u00E4utet. Pause vorbei! Die Sch\u00FCler kommen zur\u00FCck in die Klasse.";
+        },
+        afterOutro: function() {
+          return [
+            { type: "npc", name: "Mia", avatar: "\uD83D\uDC67", text: "Hey " + player.firstName + "! Jetzt haben wir Turnen! Kommst du mit?" },
+            { type: "npc", name: "Leon", avatar: "\uD83D\uDC66", text: "Der Turnsaal ist unten. Wir zeigen dir den Weg!" }
+          ];
+        }
       };
     }
   }
@@ -783,15 +947,25 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);heigh
     lockInput(true);
     var npcName = step.npcNameOverride || scene.npcName;
     var npcAvatar = step.npcAvatarOverride || scene.npcAvatar;
-    var npcText = typeof step.npcText === "function" ? step.npcText() : step.npcText;
-    var typ2 = showTyping(npcAvatar);
-    wait(800 + Math.random() * 400).then(function() {
-      typ2.remove();
-      addNpc(npcText, npcName, npcAvatar);
-      setChips(step.baseChips, step.hintChips, false);
-      userInput.placeholder = step.placeholder;
-      userInput.value = "";
-      lockInput(false);
+    var npcText = step.npcTextFn ? step.npcTextFn() : (typeof step.npcText === "function" ? step.npcText() : step.npcText);
+
+    var p = Promise.resolve();
+    if (step.narrateBefore) {
+      p = p.then(function() {
+        addNarration(step.narrateBefore);
+        return wait(800);
+      });
+    }
+    p.then(function() {
+      var typ2 = showTyping(npcAvatar);
+      return wait(800 + Math.random() * 400).then(function() {
+        typ2.remove();
+        addNpc(npcText, npcName, npcAvatar);
+        setChips(step.baseChips, step.hintChips, false);
+        userInput.placeholder = step.placeholder;
+        userInput.value = "";
+        lockInput(false);
+      });
     });
   }
 
@@ -844,17 +1018,31 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);heigh
       // Stumbling block: NPC asks again
       var rNpcName = step.npcNameOverride || scene.npcName;
       var rNpcAvatar = step.npcAvatarOverride || scene.npcAvatar;
-      var typ = showTyping(rNpcAvatar);
-      wait(800).then(function() {
-        typ.remove();
-        addNpc(result.npcReply, rNpcName, rNpcAvatar);
-        // After first failed attempt, show hint chips
-        if (attempts >= 1) {
-          setChips(step.baseChips, step.hintChips, true);
-        }
-        userInput.value = "";
-        lockInput(false);
-      });
+
+      if (result.secretaryHelp) {
+        // Secretary helps with correct greeting
+        var typ = showTyping(scene.npcAvatar);
+        wait(800).then(function() {
+          typ.remove();
+          addNpc("Psst, " + player.firstName + "! Das ist der Direktor. Sag lieber: Gr\u00FC\u00DF Gott! oder Guten Tag!", scene.npcName, scene.npcAvatar);
+          if (attempts >= 1) {
+            setChips(step.baseChips, step.hintChips, true);
+          }
+          userInput.value = "";
+          lockInput(false);
+        });
+      } else {
+        var typ = showTyping(rNpcAvatar);
+        wait(800).then(function() {
+          typ.remove();
+          addNpc(result.npcReply, rNpcName, rNpcAvatar);
+          if (attempts >= 1) {
+            setChips(step.baseChips, step.hintChips, true);
+          }
+          userInput.value = "";
+          lockInput(false);
+        });
+      }
     }
   }
 
@@ -881,6 +1069,13 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);heigh
     } else {
       p = wait(600);
     }
+    if (scene.afterOutro) {
+      p = p.then(function() {
+        return showExtras(scene.afterOutro(), 0);
+      }).then(function() {
+        return wait(1200);
+      });
+    }
     p.then(function() {
       // Insert branch scene dynamically after a branching scene
       if (scene.branch) {
@@ -900,7 +1095,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);heigh
   function finishGame() {
     updateProg();
     showScreen("end");
-    document.getElementById("endText").textContent = "Du hast deinen ersten Tag geschafft, " + player.firstName + "! Du kannst dich vorstellen und mit anderen sprechen.";
+    document.getElementById("endText").textContent = "Du hast deinen ersten Tag geschafft, " + player.firstName + "! Du kannst dich vorstellen, mit anderen sprechen, mitturnen und Zahlen schreiben!";
     document.getElementById("sScenes").textContent = SCENES.length;
     document.getElementById("sMsgs").textContent = totalMsgs;
   }
