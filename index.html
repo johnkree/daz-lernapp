@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DaZ-Lernspiele</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FFF8F0;--bgc:#FFF;--pri:#FF6B35;--pril:#FFF0E8;--prid:#E55A2B;
+  --sec:#2EC4B6;--secl:#E8FAF8;--secd:#22A599;--acc:#FFBA49;--accl:#FFF3DC;
+  --txt:#2D3436;--txtl:#636E72;--txtlr:#B2BEC3;
+}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:24px 20px 40px;
+}
+.header-area{
+  text-align:center;
+  margin-top:20px;
+  margin-bottom:32px;
+  animation:fadeIn .6s ease both;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.logo{
+  font-size:64px;
+  margin-bottom:8px;
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.app-title{
+  font-family:'Baloo 2',cursive;
+  font-size:32px;
+  font-weight:800;
+  color:var(--pri);
+  line-height:1.1;
+  letter-spacing:-0.5px;
+}
+.app-subtitle{
+  font-size:15px;
+  color:var(--txtl);
+  font-weight:600;
+  margin-top:6px;
+}
+.chapters{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  width:100%;
+  max-width:420px;
+}
+.chapter-card{
+  background:#fff;
+  border-radius:20px;
+  padding:20px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  text-decoration:none;
+  color:inherit;
+  box-shadow:0 4px 16px rgba(0,0,0,.08);
+  border:2px solid transparent;
+  transition:all .25s cubic-bezier(.34,1.56,.64,1);
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  animation:slideIn .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+.chapter-card:nth-child(1){animation-delay:.1s}
+.chapter-card:nth-child(2){animation-delay:.2s}
+.chapter-card:nth-child(3){animation-delay:.3s}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.chapter-card:hover,.chapter-card:active{
+  transform:translateY(-3px) scale(1.02);
+  box-shadow:0 8px 24px rgba(0,0,0,.12);
+  border-color:var(--pri);
+}
+.chapter-card.locked{
+  opacity:.55;
+  cursor:default;
+  background:#FAF6F0;
+}
+.chapter-card.locked:hover,.chapter-card.locked:active{
+  transform:none;
+  box-shadow:0 4px 16px rgba(0,0,0,.06);
+  border-color:transparent;
+}
+.chapter-icon{
+  width:64px;
+  height:64px;
+  border-radius:16px;
+  background:var(--pril);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:36px;
+  flex-shrink:0;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.04);
+}
+.chapter-card.ch2 .chapter-icon{background:var(--secl)}
+.chapter-card.locked .chapter-icon{background:#F0EBE3}
+.chapter-info{flex:1;min-width:0}
+.chapter-num{
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:1.2px;
+  color:var(--pri);
+  margin-bottom:2px;
+}
+.chapter-card.ch2 .chapter-num{color:var(--secd)}
+.chapter-card.locked .chapter-num{color:var(--txtlr)}
+.chapter-title{
+  font-family:'Baloo 2',cursive;
+  font-size:20px;
+  font-weight:800;
+  line-height:1.15;
+  margin-bottom:4px;
+  color:var(--txt);
+}
+.chapter-desc{
+  font-size:13px;
+  color:var(--txtl);
+  font-weight:600;
+  line-height:1.4;
+}
+.chapter-meta{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+  flex-wrap:wrap;
+}
+.tag{
+  font-size:11px;
+  font-weight:700;
+  padding:3px 10px;
+  border-radius:50px;
+  background:var(--bg);
+  color:var(--txtl);
+  border:1px solid rgba(0,0,0,.06);
+}
+.tag.scenes{background:var(--accl);color:#B8860B;border-color:var(--acc)}
+.chapter-arrow{
+  font-size:24px;
+  color:var(--pri);
+  flex-shrink:0;
+  font-weight:800;
+  transition:transform .2s;
+}
+.chapter-card:hover .chapter-arrow{transform:translateX(4px)}
+.chapter-card.ch2 .chapter-arrow{color:var(--secd)}
+.chapter-card.locked .chapter-arrow{color:var(--txtlr)}
+.lock-icon{font-size:22px}
+.footer-note{
+  margin-top:32px;
+  text-align:center;
+  font-size:12px;
+  color:var(--txtlr);
+  font-weight:600;
+  max-width:340px;
+  line-height:1.5;
+  animation:fadeIn .8s ease .5s both;
+}
+</style>
+</head>
+<body>
+<div class="header-area">
+  <div class="logo">&#x1F3EB;</div>
+  <div class="app-title">DaZ-Lernspiele</div>
+  <div class="app-subtitle">W&auml;hle ein Kapitel</div>
+</div>
+<div class="chapters">
+  <a class="chapter-card ch1" href="kapitel-1.html">
+    <div class="chapter-icon">&#x1F44B;</div>
+    <div class="chapter-info">
+      <div class="chapter-num">Kapitel 1</div>
+      <div class="chapter-title">Mein erster Tag</div>
+      <div class="chapter-desc">Sich vorstellen und kennenlernen</div>
+      <div class="chapter-meta">
+        <span class="tag scenes">3 Szenen</span>
+        <span class="tag">Alpha</span>
+      </div>
+    </div>
+    <div class="chapter-arrow">&#x2192;</div>
+  </a>
+  <a class="chapter-card ch2" href="kapitel-2.html">
+    <div class="chapter-icon">&#x1F3EB;</div>
+    <div class="chapter-info">
+      <div class="chapter-num">Kapitel 2</div>
+      <div class="chapter-title">Mein zweiter Tag</div>
+      <div class="chapter-desc">Die Schule entdecken</div>
+      <div class="chapter-meta">
+        <span class="tag scenes">8 Szenen</span>
+        <span class="tag">Alpha</span>
+      </div>
+    </div>
+    <div class="chapter-arrow">&#x2192;</div>
+  </a>
+  <div class="chapter-card locked">
+    <div class="chapter-icon"><span class="lock-icon">&#x1F512;</span></div>
+    <div class="chapter-info">
+      <div class="chapter-num">Kapitel 3</div>
+      <div class="chapter-title">Bald verf&uuml;gbar</div>
+      <div class="chapter-desc">Neue Abenteuer kommen!</div>
+    </div>
+    <div class="chapter-arrow">&#x2192;</div>
+  </div>
+</div>
+<div class="footer-note">
+  Tippe auf ein Kapitel, um zu starten.<br>Du brauchst keinen Account.
+</div>
+</body>
+</html>

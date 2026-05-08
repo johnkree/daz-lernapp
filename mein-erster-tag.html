@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mein erster Tag</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FFF8F0;--bgc:#FFF;--pri:#FF6B35;--pril:#FFF0E8;--prid:#E55A2B;
+  --sec:#2EC4B6;--secl:#E8FAF8;--secd:#22A599;--acc:#FFBA49;--accl:#FFF3DC;
+  --txt:#2D3436;--txtl:#636E72;--txtlr:#B2BEC3;--ok:#00B894;--okl:#E8FBF5;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,var(--pri),#FF8C5A);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:10}
+.header-left{display:flex;align-items:center;gap:12px}
+.header-emoji{font-size:28px}
+.header h1{font-family:'Baloo 2',cursive;font-size:18px;font-weight:800;line-height:1.1}
+.scene-label{font-size:12px;opacity:.85;font-weight:600}
+.prog-bar{background:rgba(255,255,255,.3);height:6px;border-radius:3px;width:100px;overflow:hidden}
+.prog-fill{background:#fff;height:100%;border-radius:3px;transition:width .6s cubic-bezier(.34,1.56,.64,1);width:0}
+
+/* CHAT */
+.chat{flex:1;overflow-y:auto;padding:16px 16px 8px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.msg{display:flex;gap:10px;max-width:88%;animation:msgIn .4s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes msgIn{from{opacity:0;transform:translateY(16px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.msg.npc{align-self:flex-start}.msg.player{align-self:flex-end;flex-direction:row-reverse}
+.av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.npc .av{background:var(--secl)}.player .av{background:var(--pril)}
+.bub{padding:12px 16px;border-radius:16px;line-height:1.55;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.npc .bub{background:var(--bgc);border-bottom-left-radius:4px;border:1px solid rgba(0,0,0,.04)}
+.player .bub{background:var(--pri);color:#fff;border-bottom-right-radius:4px}
+.spk{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;color:var(--secd)}
+.dots{display:flex;gap:5px;padding:4px 0}
+.dots span{width:8px;height:8px;border-radius:50%;background:var(--txtlr);animation:bounce 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-8px);opacity:1}}
+
+/* FEEDBACK inline */
+.fb-inline{align-self:center;padding:8px 18px;border-radius:50px;font-size:13px;font-weight:700;animation:pop .5s cubic-bezier(.34,1.56,.64,1) both;text-align:center;max-width:90%}
+@keyframes pop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.fb-inline.success{background:var(--okl);color:var(--ok);border:2px solid var(--ok)}
+
+/* CHOICE BUTTONS */
+.choice-wrap{display:flex;flex-direction:column;gap:10px;padding:8px 0;max-width:85%;align-self:center;animation:fadeIn .6s ease both}
+.choice-btn{background:#fff;border:2px solid var(--pri);color:var(--pri);padding:12px 20px;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;text-align:left;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.choice-btn:hover,.choice-btn:active{background:var(--pri);color:#fff;transform:scale(1.03)}
+.choice-btn.sec{border-color:var(--sec);color:var(--secd)}
+.choice-btn.sec:hover,.choice-btn.sec:active{background:var(--sec);color:#fff}
+
+/* WORD HELPS */
+.helps{flex-shrink:0;padding:8px 16px;background:var(--bg);border-top:1px solid rgba(0,0,0,.05)}
+.helps-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--txtlr);margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#fff;border:2px solid var(--sec);color:var(--secd);padding:6px 14px;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;user-select:none;-webkit-tap-highlight-color:transparent;box-shadow:0 2px 8px rgba(0,0,0,.06);font-family:'Nunito',sans-serif}
+.chip:hover,.chip:active{background:var(--sec);color:#fff;transform:scale(1.05)}
+.chip.used{opacity:.4;pointer-events:none;transform:scale(.95)}
+.chip.hint-chip{border-color:var(--acc);color:#B8860B;animation:pop .4s cubic-bezier(.34,1.56,.64,1) both}
+.chip.hint-chip:hover,.chip.hint-chip:active{background:var(--acc);color:#fff}
+
+/* INPUT */
+.inp-area{flex-shrink:0;padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:#fff;border-top:1px solid rgba(0,0,0,.06);display:flex;gap:10px;align-items:flex-end}
+.inp-wrap{flex:1}
+.inp-wrap input{width:100%;padding:14px 18px;border:2px solid #E8E8E8;border-radius:50px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:600;outline:none;transition:border-color .2s,box-shadow .2s;background:var(--bg);color:var(--txt)}
+.inp-wrap input:focus{border-color:var(--pri);box-shadow:0 0 0 4px var(--pril)}
+.inp-wrap input::placeholder{color:var(--txtlr);font-weight:400}
+.send{width:50px;height:50px;border:none;border-radius:50%;background:var(--pri);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.send:hover{background:var(--prid);transform:scale(1.05)}.send:active{transform:scale(.95)}
+.send:disabled{background:var(--txtlr);transform:none;cursor:default;box-shadow:none}
+
+/* SCENE HEADERS */
+.scene-hdr{align-self:center;text-align:center;padding:20px;animation:fadeIn .8s ease both}
+.scene-hdr .em{font-size:40px;margin-bottom:8px}
+.scene-hdr .ttl{font-family:'Baloo 2',cursive;font-size:20px;font-weight:800;color:var(--pri)}
+.scene-hdr .sub{font-size:13px;color:var(--txtl);margin-top:4px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.narr{align-self:center;text-align:center;padding:16px 20px;animation:fadeIn .8s ease both;font-style:italic;color:var(--txtl);font-size:14px;max-width:90%}
+
+/* SCREENS */
+.screen{display:flex;flex-direction:column;align-items:center;text-align:center;padding:24px 24px;flex:1;gap:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.screen .big{font-size:48px}
+.screen h2{font-family:'Baloo 2',cursive;font-size:28px;color:var(--pri)}
+.screen p{color:var(--txtl);font-size:16px;line-height:1.6;max-width:320px}
+.screen .big.float{animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes cBounce{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
+.screen .big.celebrate{animation:cBounce .8s cubic-bezier(.34,1.56,.64,1) both}
+
+/* AVATAR CREATOR */
+.avatar-setup{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;max-width:360px;padding-bottom:24px}
+.av-section{width:100%;text-align:center}
+.av-section label{display:block;font-weight:700;font-size:14px;color:var(--txtl);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.av-options{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.av-opt{width:56px;height:56px;border-radius:50%;border:3px solid #E8E8E8;background:#fff;font-size:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.av-opt:hover{transform:scale(1.1)}.av-opt.sel{border-color:var(--pri);box-shadow:0 0 0 3px var(--pril);transform:scale(1.1)}
+.av-preview{font-size:48px;margin:4px 0}
+.av-input{width:100%;padding:12px 18px;border:2px solid #E8E8E8;border-radius:50px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:600;outline:none;text-align:center;background:var(--bg);color:var(--txt);transition:border-color .2s}
+.av-input:focus{border-color:var(--pri)}
+
+.btn{border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;cursor:pointer;transition:all .2s}
+.btn:hover{transform:scale(1.05)}.btn:active{transform:scale(.98)}
+.btn-pri{background:var(--pri);color:#fff;padding:16px 40px;font-size:18px;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.btn-pri:hover{background:var(--prid)}
+.btn-sec{background:var(--pri);color:#fff;padding:14px 32px;font-size:16px;box-shadow:0 4px 16px rgba(0,0,0,.1);margin-top:8px}
+.btn:disabled{opacity:.4;cursor:default;transform:none!important}
+.stats{display:flex;gap:24px;margin:12px 0}
+.stat{text-align:center}
+.stat .num{font-family:'Baloo 2',cursive;font-size:36px;font-weight:800;color:var(--sec);line-height:1}
+.stat .lbl{font-size:12px;color:var(--txtl);font-weight:600}
+.chat::-webkit-scrollbar{width:4px}.chat::-webkit-scrollbar-track{background:transparent}.chat::-webkit-scrollbar-thumb{background:var(--txtlr);border-radius:2px}
+.errmsg{color:var(--pri);font-size:13px;font-weight:600;margin-top:4px;min-height:20px}
+</style>
+</head>
+<body>
+
+<!-- AVATAR SCREEN -->
+<div class="screen" id="avatarScreen">
+  <div class="big float">&#x1F3EB;</div>
+  <h2>Mein erster Tag</h2>
+  <p>Erstelle deinen Charakter!</p>
+  <div class="avatar-setup">
+    <div class="av-section">
+      <label>Wer bist du?</label>
+      <div class="av-options" id="genderOpts"></div>
+    </div>
+    <div class="av-section">
+      <label>Aussehen</label>
+      <div class="av-options" id="skinOpts"></div>
+    </div>
+    <div class="av-section">
+      <div class="av-preview" id="avPreview">&#x1F9D1;</div>
+    </div>
+    <div class="av-section">
+      <label>Dein Vorname</label>
+      <input class="av-input" id="avFirstName" type="text" placeholder="Vorname" autocomplete="off">
+    </div>
+    <div class="av-section">
+      <label>Dein Nachname</label>
+      <input class="av-input" id="avLastName" type="text" placeholder="Nachname" autocomplete="off">
+    </div>
+    <div class="errmsg" id="avError"></div>
+    <button class="btn btn-pri" id="avStartBtn">Los geht's! &#x1F680;</button>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="gameScreen" style="display:none;flex-direction:column;height:100vh;height:100dvh;">
+  <div class="header">
+    <div class="header-left">
+      <div class="header-emoji" id="sceneEmoji">&#x1F3E2;</div>
+      <div><h1>Mein erster Tag</h1><div class="scene-label" id="sceneLabel">Szene 1</div></div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+  </div>
+  <div class="chat" id="chatArea"></div>
+  <div class="helps" id="helpsBox">
+    <div class="helps-lbl" id="helpsLbl">&#x1F4A1; W&ouml;rter zum Antippen</div>
+    <div class="chips" id="chips"></div>
+  </div>
+  <div class="inp-area">
+    <div class="inp-wrap"><input type="text" id="userInput" placeholder="Schreib hier..." autocomplete="off" autocapitalize="off" enterkeyhint="send"></div>
+    <button class="send" id="sendBtn">&#x27A4;</button>
+  </div>
+</div>
+
+<!-- END SCREEN -->
+<div class="screen" id="endScreen" style="display:none;">
+  <div class="big celebrate">&#x1F389;</div>
+  <h2>Kapitel 1 geschafft!</h2>
+  <p id="endText">Du hast deinen ersten Tag geschafft!</p>
+  <div class="stats">
+    <div class="stat"><div class="num" id="sScore">0%</div><div class="lbl">Richtig beim 1. Versuch</div></div>
+    <div class="stat"><div class="num" id="sScenes">0</div><div class="lbl">Szenen</div></div>
+    <div class="stat"><div class="num" id="sMsgs">0</div><div class="lbl">Nachrichten</div></div>
+  </div>
+  <button class="btn btn-sec" id="restartBtn">Nochmal spielen &#x1F504;</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- AVATAR DATA ----
+  // Base emojis: child, boy, girl
+  // Skin tone modifiers: default, light, medium-light, medium, medium-dark, dark
+  var SKIN_MODS = ["", "\uD83C\uDFFB", "\uD83C\uDFFC", "\uD83C\uDFFD", "\uD83C\uDFFE", "\uD83C\uDFFF"];
+  var SKIN_LABELS = ["\uD83D\uDFE1", "\uD83E\uDED0", "\uD83D\uDFE0", "\uD83D\uDFE4", "\uD83D\uDFEB", "\u26AB"];
+  var GENDER_EMOJIS = [
+    { label: "Bub", bases: ["\uD83D\uDC66"] },   // boy
+    { label: "M\u00E4dchen", bases: ["\uD83D\uDC67"] }  // girl
+  ];
+
+  var player = { firstName: "", lastName: "", emoji: "\uD83E\uDDD1", gender: 0, skin: 0 };
+  var assignedClass = "1B";
+
+  function buildEmoji() {
+    var g = GENDER_EMOJIS[player.gender];
+    return g.bases[0] + SKIN_MODS[player.skin];
+  }
+
+  // ---- AVATAR SCREEN ----
+  var genderOpts = document.getElementById("genderOpts");
+  var skinOpts = document.getElementById("skinOpts");
+  var avPreview = document.getElementById("avPreview");
+  var avFirstName = document.getElementById("avFirstName");
+  var avLastName = document.getElementById("avLastName");
+  var avError = document.getElementById("avError");
+
+  function renderAvatarOptions() {
+    genderOpts.innerHTML = "";
+    for (var g = 0; g < GENDER_EMOJIS.length; g++) {
+      (function(gi) {
+        var btn = document.createElement("button");
+        btn.className = "av-opt" + (player.gender === gi ? " sel" : "");
+        btn.textContent = GENDER_EMOJIS[gi].bases[0];
+        btn.title = GENDER_EMOJIS[gi].label;
+        btn.addEventListener("click", function() {
+          player.gender = gi;
+          renderAvatarOptions();
+        });
+        genderOpts.appendChild(btn);
+      })(g);
+    }
+
+    skinOpts.innerHTML = "";
+    for (var s = 0; s < SKIN_MODS.length; s++) {
+      (function(si) {
+        var btn = document.createElement("button");
+        btn.className = "av-opt" + (player.skin === si ? " sel" : "");
+        btn.textContent = GENDER_EMOJIS[player.gender].bases[0] + SKIN_MODS[si];
+        btn.addEventListener("click", function() {
+          player.skin = si;
+          renderAvatarOptions();
+        });
+        skinOpts.appendChild(btn);
+      })(s);
+    }
+
+    player.emoji = buildEmoji();
+    avPreview.textContent = player.emoji;
+  }
+
+  renderAvatarOptions();
+
+  document.getElementById("avStartBtn").addEventListener("click", function() {
+    var fn = avFirstName.value.trim();
+    var ln = avLastName.value.trim();
+    if (!fn) { avError.textContent = "Bitte gib deinen Vornamen ein!"; return; }
+    if (!ln) { avError.textContent = "Bitte gib deinen Nachnamen ein!"; return; }
+    player.firstName = fn;
+    player.lastName = ln;
+    avError.textContent = "";
+    startGame();
+  });
+
+  // ---- GAME ENGINE ----
+  var sceneIdx = 0, stepIdx = 0, totalMsgs = 0, attempts = 0, inputLocked = false, totalChecks = 0, firstTryPasses = 0;
+
+  var avatarScreen = document.getElementById("avatarScreen");
+  var gameScreen = document.getElementById("gameScreen");
+  var endScreen = document.getElementById("endScreen");
+  var chatArea = document.getElementById("chatArea");
+  var userInput = document.getElementById("userInput");
+  var sendBtn = document.getElementById("sendBtn");
+  var chipsEl = document.getElementById("chips");
+  var helpsLbl = document.getElementById("helpsLbl");
+  var sceneEmojiEl = document.getElementById("sceneEmoji");
+  var sceneLabelEl = document.getElementById("sceneLabel");
+  var progFill = document.getElementById("progFill");
+
+  function wait(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+  function scrollDown() { requestAnimationFrame(function() { chatArea.scrollTop = chatArea.scrollHeight; }); }
+
+  // ---- SCENE DEFINITIONS (built dynamically using player data) ----
+  function buildScenes() {
+    return [
+      // SCENE 1: Sekretariat
+      {
+        emoji: "\uD83C\uDFE2", label: "Szene 1: Im Sekretariat",
+        npcName: "Frau Berger", npcAvatar: "\uD83D\uDC69\u200D\uD83D\uDCBC",
+        intro: "Du findest das Sekretariat gleich neben dem Eingang.",
+        steps: [
+          {
+            npcText: "Guten Morgen! Du bist neu hier, oder? Wie hei\u00DFt du?",
+            placeholder: "Ich hei\u00DFe...",
+            baseChips: ["Ich", "hei\u00DFe"],
+            hintChips: ["Mein", "Name", "ist", player.firstName, player.lastName],
+            check: (function() {
+              var gotFirst = false, gotLast = false;
+              return function(input) {
+                var low = input.toLowerCase().trim();
+                var hasFirst = low.indexOf(player.firstName.toLowerCase()) !== -1;
+                var hasLast = low.indexOf(player.lastName.toLowerCase()) !== -1;
+                if (hasFirst) gotFirst = true;
+                if (hasLast) gotLast = true;
+                if (gotFirst && gotLast) return { pass: true };
+                if (gotFirst && !gotLast) return { pass: false, npcReply: "Und wie ist dein Nachname?" };
+                if (gotLast && !gotFirst) return { pass: false, npcReply: "Und dein Vorname?" };
+                return { pass: false, npcReply: "Ich brauche deinen Vor- und Nachnamen. Wie hei\u00DFt du?" };
+              };
+            })()
+          },
+          {
+            npcText: function() { return "Ah, " + player.firstName + " " + player.lastName + "! Willkommen! Du kommst in die " + assignedClass + ". Kannst du das wiederholen? In welche Klasse gehst du?"; },
+            placeholder: "Ich gehe in die...",
+            baseChips: ["Ich", "gehe", "in die"],
+            hintChips: [assignedClass, "Klasse"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if (low.indexOf(assignedClass.toLowerCase()) !== -1) return { pass: true };
+              return { pass: false, npcReply: "Die Klasse " + assignedClass + ". Sag: Ich gehe in die " + assignedClass + "." };
+            }
+          },
+          {
+            npcText: "",
+            npcNameOverride: "Direktor Berger", npcAvatarOverride: "\uD83D\uDC68\u200D\uD83D\uDCBC",
+            placeholder: "Gr\u00FC\u00DF Gott! / Guten Tag! / ...",
+            baseChips: ["Guten", "Tag", "Morgen"],
+            hintChips: ["Gr\u00FC\u00DF", "Gott"],
+            narrateBefore: "Die T\u00FCr zur Direktion geht auf. Ein Mann im Anzug kommt heraus.",
+            npcTextFn: function() { return "Ah, du bist bestimmt " + player.firstName + "! Herzlich willkommen an unserer Schule. Gr\u00FC\u00DF Gott!"; },
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if (/gr\u00FC\u00DF\s*gott|guten\s*tag|guten\s*morgen/.test(low)) return { pass: true };
+              if (/\b(hallo|hi|hey|servus|moin|na|yo|sup)\b/.test(low)) {
+                return { pass: false, npcReply: "", secretaryHelp: true };
+              }
+              return { pass: false, npcReply: "Sag zum Beispiel: Gr\u00FC\u00DF Gott! oder Guten Tag!" };
+            }
+          },
+          {
+            npcText: "Sehr gut! Dein Klassenraum ist im ersten Stock. Geh die Treppe hoch und dann links. Alles klar?",
+            placeholder: "Ja / Danke / ...",
+            baseChips: ["Ja", "Danke", "Alles klar"],
+            hintChips: ["Vielen Dank", "Wo ist"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if (low.length >= 2) return { pass: true };
+              return { pass: false, npcReply: "Sag einfach 'Ja' oder 'Danke'!" };
+            }
+          }
+        ],
+        outro: "Du gehst die Treppe hoch und suchst dein Klassenzimmer."
+      },
+      // SCENE 2: Klassenzimmer - Lehrer
+      {
+        emoji: "\uD83D\uDCDA", label: "Szene 2: Im Klassenzimmer",
+        npcName: "Herr Yilmaz", npcAvatar: "\uD83D\uDC68\u200D\uD83C\uDFEB",
+        intro: "Du findest das Klassenzimmer. Der Lehrer steht vorne.",
+        steps: [
+          {
+            npcText: "Hallo! Du musst der neue Sch\u00FCler sein. Wie hei\u00DFt du?",
+            placeholder: "Ich hei\u00DFe... / Mein Name ist...",
+            baseChips: ["Ich", "hei\u00DFe", "bin"],
+            hintChips: [player.firstName, player.lastName, "Mein", "Name", "ist"],
+            check: (function() {
+              var gotFirst = false, gotLast = false;
+              return function(input) {
+                var low = input.toLowerCase().trim();
+                var hasFirst = low.indexOf(player.firstName.toLowerCase()) !== -1;
+                var hasLast = low.indexOf(player.lastName.toLowerCase()) !== -1;
+                if (hasFirst) gotFirst = true;
+                if (hasLast) gotLast = true;
+                if (gotFirst && gotLast) return { pass: true };
+                if (gotFirst && !gotLast) return { pass: false, npcReply: "Und dein Nachname? Ich brauche den vollen Namen f\u00FCr die Liste." };
+                if (gotLast && !gotFirst) return { pass: false, npcReply: "Und dein Vorname?" };
+                return { pass: false, npcReply: "Sag mir bitte deinen Vor- und Nachnamen." };
+              };
+            })()
+          },
+          {
+            npcText: function() { return "Willkommen, " + player.firstName + "! Ich stelle dich der Klasse vor."; },
+            placeholder: "",
+            baseChips: [],
+            hintChips: [],
+            autoPass: true,
+            afterPass: function() {
+              return [
+                { type: "narr", text: "Herr Yilmaz dreht sich zur Klasse." },
+                { type: "npc", name: "Herr Yilmaz", avatar: "\uD83D\uDC68\u200D\uD83C\uDFEB", text: "Klasse, das ist " + player.firstName + " " + player.lastName + ". " + (player.gender === 0 ? "Er" : "Sie") + " ist neu bei uns. Seid nett!" },
+                { type: "narr", text: "Die Klasse sagt \u201EHallo!\u201C. Herr Yilmaz zeigt dir einen freien Platz neben Mia." }
+              ];
+            }
+          }
+        ],
+        outro: ""
+      },
+      // SCENE 3: Sitznachbarin
+      {
+        emoji: "\uD83D\uDC67", label: "Szene 3: Deine Sitznachbarin",
+        npcName: "Mia", npcAvatar: "\uD83D\uDC67",
+        intro: "Du setzt dich neben Mia. Sie l\u00E4chelt dich an.",
+        steps: [
+          {
+            npcText: "Hi! Ich bin Mia. Und du? Wie hei\u00DFt du?",
+            placeholder: "Ich bin... / Ich hei\u00DFe...",
+            baseChips: ["Hallo", "Hi", "Ich", "bin", "hei\u00DFe"],
+            hintChips: [player.firstName],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              var hasName = low.indexOf(player.firstName.toLowerCase()) !== -1;
+              if (hasName) return { pass: true };
+              return { pass: false, npcReply: "Wie ist dein Name? Sag: Ich bin ... oder Ich hei\u00DFe ..." };
+            }
+          },
+          {
+            npcText: function() { return "Cool, " + player.firstName + "! Woher kommst du?"; },
+            placeholder: "Ich komme aus...",
+            baseChips: ["Ich", "komme", "aus"],
+            hintChips: ["bin aus"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if ((low.indexOf("komme") !== -1 || low.indexOf("aus") !== -1 || low.indexOf("bin aus") !== -1) && low.split(/\s+/).length >= 3) return { pass: true };
+              if (low.split(/\s+/).length >= 2) return { pass: true };
+              return { pass: false, npcReply: "Sag zum Beispiel: Ich komme aus ... und dann dein Land!" };
+            }
+          },
+          {
+            npcText: "Magst du Sport? Was ist dein Lieblingsfach?",
+            placeholder: "Ich mag... / Mein Lieblingsfach ist...",
+            baseChips: ["Ich", "mag"],
+            hintChips: ["Mein", "Lieblingsfach", "ist", "Sport", "Musik", "Kunst", "Mathe", "Deutsch"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              var faecher = ["sport","musik","kunst","mathe","deutsch","englisch","bio","physik","turnen","werken","informatik"];
+              for (var i = 0; i < faecher.length; i++) { if (low.indexOf(faecher[i]) !== -1) return { pass: true }; }
+              if (low.indexOf("mag") !== -1 || low.indexOf("lieblingsfach") !== -1 || low.indexOf("gern") !== -1) return { pass: true };
+              return { pass: false, npcReply: "Sag einfach: Ich mag ... und dann ein Fach! Zum Beispiel Sport, Musik oder Kunst." };
+            }
+          },
+          {
+            npcText: "Cool! Die Pause ist bald. Willst du mit mir und meinen Freunden rausgehen?",
+            placeholder: "Ja, gerne! / ...",
+            baseChips: ["Ja", "gerne", "Nein", "danke"],
+            hintChips: ["super", "cool", "vielleicht", "sp\u00E4ter"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if (/\b(ja|gerne|klar|super|cool|okay|ok|na\s*klar|sicher|auf\s*jeden\s*fall)\b/.test(low)) {
+                player.miaJa = true;
+                return { pass: true, npcReply: "Super! Dann zeig ich dir alles! \uD83D\uDE0A" };
+              }
+              if (/\b(nein|ne|nee|nicht|lieber\s*nicht|vielleicht|sp\u00E4ter|danke\s*nein)\b/.test(low)) {
+                player.miaJa = false;
+                return { pass: true, npcReply: "Okay, kein Problem! Vielleicht ein anderes Mal. \uD83D\uDE0A" };
+              }
+              return { pass: false, npcReply: "Sag einfach ja oder nein!" };
+            }
+          }
+        ],
+        outro: function() {
+          if (player.miaJa) {
+            return "Die Schulglocke l\u00E4utet. Pause! Mia nimmt dich mit nach drau\u00DFen.";
+          }
+          return "Die Schulglocke l\u00E4utet. Pause! Mia geht raus. Du bleibst im Klassenzimmer.";
+        },
+        branch: true
+      },
+      // SCENE 5: Turnsaal
+      {
+        emoji: "\uD83E\uDD3E", label: "Szene 5: Im Turnsaal",
+        npcName: "Herr Gruber", npcAvatar: "\uD83D\uDC68\u200D\uD83E\uDDB1",
+        intro: "Ihr geht zusammen in den Turnsaal. Ein sportlicher Lehrer steht in der Halle.",
+        steps: [
+          {
+            npcText: function() { return "Hallo! Ich bin Herr Gruber, euer Turnlehrer. Du bist neu, oder? Wie hei\u00DFt du?"; },
+            placeholder: "Ich bin... / Ich hei\u00DFe...",
+            baseChips: ["Ich", "bin", "hei\u00DFe"],
+            hintChips: [player.firstName],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if (low.indexOf(player.firstName.toLowerCase()) !== -1) return { pass: true };
+              return { pass: false, npcReply: "Sag mir deinen Namen! Ich bin ... oder Ich hei\u00DFe ..." };
+            }
+          },
+          {
+            npcText: function() { return "Heute spielen wir ein Spiel, " + player.firstName + ". Welches Spiel kennst du?"; },
+            placeholder: "Fu\u00DFball / Ich wei\u00DF nicht / ...",
+            baseChips: ["Ich", "kenne"],
+            hintChips: ["Fu\u00DFball", "Basketball", "Volleyball", "Fangen", "wei\u00DF nicht", "verstehe nicht"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              var spiele = ["fu\u00DFball","basketball","volleyball","tennis","handball","tischtennis","badminton","fangen","verstecken"];
+              for (var i = 0; i < spiele.length; i++) { if (low.indexOf(spiele[i]) !== -1) return { pass: true, npcReply: "Ah, " + input.trim() + "! Das ist super! \uD83D\uDE0A" }; }
+              if (/wei\u00DF\s*nicht|kenn.*nicht|keine?\s*ahnung|nicht\s*sicher/.test(low)) {
+                return { pass: true, npcReply: "Kein Problem! Schau einfach zu und mach mit. Du lernst das schnell!" };
+              }
+              if (/versteh.*nicht|was\s*ist|was\s*bedeutet/.test(low)) {
+                return { pass: true, npcReply: "Kein Problem! Schau einfach zu und mach mit. Du lernst das schnell!" };
+              }
+              if (low.length >= 2) return { pass: true, npcReply: "Okay! Schau einfach zu und mach mit. Du lernst das schnell!" };
+              return { pass: false, npcReply: "Sag ein Spiel das du kennst, oder sag: Ich wei\u00DF nicht." };
+            }
+          },
+          {
+            npcText: "",
+            placeholder: "",
+            baseChips: [],
+            hintChips: [],
+            autoPass: true,
+            npcTextFn: function() { return "Super! Dann los!"; },
+            afterPass: function() {
+              return [
+                { type: "narr", text: "Herr Gruber pfeift. Die Kinder spielen. Du machst mit!" },
+                { type: "narr", text: "\uD83C\uDFC3 Nach dem Spiel holt Herr Gruber einen Fu\u00DFball." },
+                { type: "npc", name: "Herr Gruber", avatar: "\uD83D\uDC68\u200D\uD83E\uDDB1", text: "So! Jetzt spielen wir noch Fu\u00DFball. Aber zuerst \u2014" }
+              ];
+            }
+          },
+          {
+            npcText: function() { return "Schau mal, " + player.firstName + "! \u26BD Was ist das? Wie hei\u00DFt das?"; },
+            placeholder: "Ball / ein Ball / ...",
+            baseChips: ["ein", "der", "Ball"],
+            hintChips: ["Fu\u00DFball", "das ist"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if (/\b(ball|fu\u00DFball)\b/.test(low)) return { pass: true, npcReply: "Genau! Das ist ein Ball! \u26BD Sehr gut!" };
+              return { pass: false, npcReply: "Das ist ein Ball. Wiederhole: ein Ball." };
+            }
+          }
+        ],
+        outro: "Herr Gruber pfeift. Fu\u00DFball! Die Kinder spielen und lachen. \u26BD",
+        afterOutro: function() {
+          return [
+            { type: "narr", text: "Die Turnstunde ist vorbei. Alle gehen zur\u00FCck ins Klassenzimmer." },
+            { type: "npc", name: "Mia", avatar: "\uD83D\uDC67", text: "Jetzt haben wir noch Mathe. Frau Horvath ist nett, keine Sorge!" }
+          ];
+        }
+      },
+      // SCENE 6: Mathematik
+      (function() {
+        var zahlWort = ["","eins","zwei","drei","vier","f\u00FCnf","sechs","sieben","acht","neun","zehn","elf","zw\u00F6lf","dreizehn","vierzehn","f\u00FCnfzehn","sechzehn","siebzehn","achtzehn","neunzehn","zwanzig","einundzwanzig"];
+        // Pick 9 random unique numbers from 1-21
+        var pool = [];
+        for (var i = 1; i <= 21; i++) pool.push(i);
+        for (var i = pool.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+        }
+        var aufgaben = pool.slice(0, 9);
+
+        function makeStep(zahl, idx) {
+          var wort = zahlWort[zahl];
+          var prefix = idx === 0
+            ? "Gut! Erste Aufgabe: Schreib die Zahl als Wort. \u270D\uFE0F Wie schreibt man " + zahl + "?"
+            : "Wie schreibt man " + zahl + "?";
+          return {
+            npcText: prefix,
+            placeholder: zahl + " = ...",
+            baseChips: [],
+            hintChips: [],
+            check: function(input) {
+              var low = input.toLowerCase().trim().replace(/\u00DF/g, "ss");
+              var target = wort.replace(/\u00DF/g, "ss").replace(/\u00FC/g, "ue").replace(/\u00F6/g, "oe");
+              var inputNorm = low.replace(/\u00FC/g, "ue").replace(/\u00F6/g, "oe");
+              if (inputNorm.indexOf(target) !== -1) return { pass: true };
+              // Also accept original form with umlauts
+              if (low.indexOf(wort) !== -1) return { pass: true };
+              return { pass: false, npcReply: zahl + " schreibt man: " + wort + ". Schreib es ab: " + wort };
+            }
+          };
+        }
+
+        var steps = [
+          {
+            npcText: function() { return "Guten Tag! Ich bin Frau Horvath. Du bist " + player.firstName + ", richtig? Sch\u00F6n, dass du da bist!"; },
+            placeholder: "",
+            baseChips: [],
+            hintChips: [],
+            autoPass: true,
+            afterPass: function() {
+              return [
+                { type: "narr", text: "Frau Horvath teilt Arbeitsbl\u00E4tter aus." },
+                { type: "npc", name: "Frau Horvath", avatar: "\uD83D\uDC69\u200D\uD83D\uDD2C", text: "Heute \u00FCben wir Zahlen. " + player.firstName + ", wir schauen mal wie gut du Zahlen schreiben kannst!" }
+              ];
+            }
+          }
+        ];
+        for (var i = 0; i < aufgaben.length; i++) {
+          steps.push(makeStep(aufgaben[i], i));
+        }
+        return {
+          emoji: "\uD83D\uDCDD", label: "Szene 6: Mathematik",
+          npcName: "Frau Horvath", npcAvatar: "\uD83D\uDC69\u200D\uD83D\uDD2C",
+          intro: "Zur\u00FCck im Klassenzimmer. Eine freundliche Lehrerin steht an der Tafel.",
+          steps: steps,
+          outro: function() { return "Frau Horvath l\u00E4chelt. \u201ESehr gut, " + player.firstName + "! Du kannst schon toll Zahlen schreiben!\u201C"; }
+        };
+      })()
+    ];
+  }
+
+  function buildBranchScene() {
+    if (player.miaJa) {
+      // SCENE 4a: Schulhof — Mias Freunde
+      return {
+        emoji: "\u2600\uFE0F", label: "Szene 4: Im Schulhof",
+        npcName: "Leon", npcAvatar: "\uD83D\uDC66",
+        intro: "Im Schulhof warten Mias Freunde. Leon und Sara sitzen auf einer Bank.",
+        steps: [
+          {
+            npcText: function() { return "Hey! Du bist " + player.firstName + ", oder? Mia hat gesagt, du bist neu. Wie alt bist du?"; },
+            placeholder: "Ich bin ... Jahre alt.",
+            baseChips: ["Ich", "bin", "Jahre", "alt"],
+            hintChips: ["zehn", "elf", "zw\u00F6lf", "dreizehn", "vierzehn"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              var zahlen = ["zehn","elf","zw\u00F6lf","dreizehn","vierzehn","f\u00FCnfzehn","10","11","12","13","14","15"];
+              for (var i = 0; i < zahlen.length; i++) { if (low.indexOf(zahlen[i]) !== -1) return { pass: true }; }
+              if (low.indexOf("jahre") !== -1 || low.indexOf("alt") !== -1) return { pass: true };
+              return { pass: false, npcReply: "Sag zum Beispiel: Ich bin zw\u00F6lf Jahre alt." };
+            }
+          },
+          {
+            npcText: "Cool!",
+            placeholder: "",
+            baseChips: [],
+            hintChips: [],
+            autoPass: true,
+            afterPass: function() {
+              return [
+                { type: "narr", text: "Sara schaut neugierig." },
+                { type: "npc", name: "Sara", avatar: "\uD83D\uDC69\u200D\uD83E\uDDB1", text: "Sprichst du noch andere Sprachen? Ich kann T\u00FCrkisch und Deutsch!" }
+              ];
+            },
+            nextNpc: { name: "Sara", avatar: "\uD83D\uDC69\u200D\uD83E\uDDB1" }
+          },
+          {
+            npcText: "Welche Sprachen sprichst du?",
+            npcNameOverride: "Sara", npcAvatarOverride: "\uD83D\uDC69\u200D\uD83E\uDDB1",
+            placeholder: "Ich spreche...",
+            baseChips: ["Ich", "spreche"],
+            hintChips: ["Deutsch", "Englisch", "Arabisch", "T\u00FCrkisch", "Dari", "Ukrainisch", "und"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              var sprachen = ["deutsch","englisch","arabisch","t\u00FCrkisch","kurdisch","dari","farsi","ukrainisch","russisch","serbisch","bosnisch","rum\u00E4nisch","franz\u00F6sisch","spanisch","polnisch","ungarisch","somali","paschtu","tschetschenisch"];
+              for (var i = 0; i < sprachen.length; i++) { if (low.indexOf(sprachen[i]) !== -1) return { pass: true }; }
+              if (low.indexOf("sprech") !== -1 || low.indexOf("sprach") !== -1) return { pass: true };
+              return { pass: false, npcReply: "Sag zum Beispiel: Ich spreche Deutsch und ..." };
+            }
+          },
+          {
+            npcText: function() { return "Voll cool! Und wo wohnst du, " + player.firstName + "? Wir wohnen alle hier in der N\u00E4he."; },
+            placeholder: "Ich wohne in...",
+            baseChips: ["Ich", "wohne", "in"],
+            hintChips: ["Wien", "Graz", "Linz", "Salzburg", "der", "Stra\u00DFe"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if (low.indexOf("wohn") !== -1 || low.indexOf(" in ") !== -1 || low.indexOf("stra\u00DF") !== -1 || low.indexOf("gasse") !== -1) return { pass: true };
+              if (low.split(/\s+/).length >= 2) return { pass: true };
+              return { pass: false, npcReply: "Sag zum Beispiel: Ich wohne in ... und dann deine Stadt oder Stra\u00DFe!" };
+            }
+          }
+        ],
+        outro: function() {
+          return "Die Glocke l\u00E4utet. Pause vorbei!";
+        },
+        afterOutro: function() {
+          return [
+            { type: "npc", name: "Leon", avatar: "\uD83D\uDC66", text: "Jetzt haben wir Turnen! Komm, wir gehen in den Turnsaal!" },
+            { type: "npc", name: "Mia", avatar: "\uD83D\uDC67", text: "Ja, komm " + player.firstName + "! Ich zeig dir wo der Turnsaal ist." }
+          ];
+        }
+      };
+    } else {
+      // SCENE 4b: Klasse — Frau Novak
+      return {
+        emoji: "\uD83D\uDCCB", label: "Szene 4: In der Pause",
+        npcName: "Frau Novak", npcAvatar: "\uD83D\uDC69\u200D\uD83C\uDFEB",
+        intro: "Die Klasse ist fast leer. Eine Lehrerin kommt herein und sieht dich.",
+        steps: [
+          {
+            npcText: function() { return "Hallo! Du bist bestimmt " + player.firstName + ", unser neuer Sch\u00FCler. Ich bin Frau Novak, deine Deutschlehrerin. Sag mal, wie alt bist du?"; },
+            placeholder: "Ich bin ... Jahre alt.",
+            baseChips: ["Ich", "bin", "Jahre", "alt"],
+            hintChips: ["zehn", "elf", "zw\u00F6lf", "dreizehn", "vierzehn"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              var zahlen = ["zehn","elf","zw\u00F6lf","dreizehn","vierzehn","f\u00FCnfzehn","10","11","12","13","14","15"];
+              for (var i = 0; i < zahlen.length; i++) { if (low.indexOf(zahlen[i]) !== -1) return { pass: true }; }
+              if (low.indexOf("jahre") !== -1 || low.indexOf("alt") !== -1) return { pass: true };
+              return { pass: false, npcReply: "Sag zum Beispiel: Ich bin zw\u00F6lf Jahre alt." };
+            }
+          },
+          {
+            npcText: "Gut! Welche Sprachen sprichst du? Das ist wichtig f\u00FCr mich als Deutschlehrerin.",
+            placeholder: "Ich spreche...",
+            baseChips: ["Ich", "spreche"],
+            hintChips: ["Deutsch", "Englisch", "Arabisch", "T\u00FCrkisch", "Dari", "Ukrainisch", "und"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              var sprachen = ["deutsch","englisch","arabisch","t\u00FCrkisch","kurdisch","dari","farsi","ukrainisch","russisch","serbisch","bosnisch","rum\u00E4nisch","franz\u00F6sisch","spanisch","polnisch","ungarisch","somali","paschtu","tschetschenisch"];
+              for (var i = 0; i < sprachen.length; i++) { if (low.indexOf(sprachen[i]) !== -1) return { pass: true }; }
+              if (low.indexOf("sprech") !== -1 || low.indexOf("sprach") !== -1) return { pass: true };
+              return { pass: false, npcReply: "Sag zum Beispiel: Ich spreche Deutsch und ..." };
+            }
+          },
+          {
+            npcText: function() { return "Sehr sch\u00F6n! Und wo wohnst du, " + player.firstName + "? Kommst du gut zur Schule?"; },
+            placeholder: "Ich wohne in...",
+            baseChips: ["Ich", "wohne", "in"],
+            hintChips: ["Wien", "Graz", "Linz", "Salzburg", "der", "Stra\u00DFe"],
+            check: function(input) {
+              var low = input.toLowerCase().trim();
+              if (low.indexOf("wohn") !== -1 || low.indexOf(" in ") !== -1 || low.indexOf("stra\u00DF") !== -1 || low.indexOf("gasse") !== -1) return { pass: true };
+              if (low.split(/\s+/).length >= 2) return { pass: true };
+              return { pass: false, npcReply: "Sag zum Beispiel: Ich wohne in ... und dann deine Stadt oder Stra\u00DFe!" };
+            }
+          }
+        ],
+        outro: function() {
+          return "Die Glocke l\u00E4utet. Pause vorbei! Die Sch\u00FCler kommen zur\u00FCck in die Klasse.";
+        },
+        afterOutro: function() {
+          return [
+            { type: "npc", name: "Mia", avatar: "\uD83D\uDC67", text: "Hey " + player.firstName + "! Jetzt haben wir Turnen! Kommst du mit?" },
+            { type: "npc", name: "Leon", avatar: "\uD83D\uDC66", text: "Der Turnsaal ist unten. Wir zeigen dir den Weg!" }
+          ];
+        }
+      };
+    }
+  }
+
+  var SCENES = [];
+
+  function totalStepCount() {
+    var n = 0;
+    for (var i = 0; i < SCENES.length; i++) n += SCENES[i].steps.length;
+    return n;
+  }
+  function doneStepCount() {
+    var n = 0;
+    for (var i = 0; i < sceneIdx; i++) n += SCENES[i].steps.length;
+    return n + stepIdx;
+  }
+  function updateProg() {
+    progFill.style.width = Math.round((doneStepCount() / totalStepCount()) * 100) + "%";
+  }
+
+  // ---- RENDERING ----
+  function el(tag, cls, html) {
+    var d = document.createElement(tag);
+    if (cls) d.className = cls;
+    if (html !== undefined) d.innerHTML = html;
+    return d;
+  }
+  function addNpc(text, name, avatar) {
+    var d = el("div", "msg npc", '<div class="av">' + avatar + '</div><div class="bub"><div class="spk">' + name + '</div>' + text + '</div>');
+    chatArea.appendChild(d); scrollDown();
+  }
+  function addPlayer(text) {
+    var d = el("div", "msg player", '<div class="av">' + player.emoji + '</div><div class="bub">' + text + '</div>');
+    chatArea.appendChild(d); scrollDown();
+  }
+  function addNarration(text) {
+    var d = el("div", "narr"); d.textContent = text;
+    chatArea.appendChild(d); scrollDown();
+  }
+  function addSuccess(text) {
+    var d = el("div", "fb-inline success"); d.textContent = text;
+    chatArea.appendChild(d); scrollDown();
+  }
+  function addSceneHeader(scene) {
+    var d = el("div", "scene-hdr", '<div class="em">' + scene.emoji + '</div><div class="ttl">' + scene.label + '</div>');
+    chatArea.appendChild(d); scrollDown();
+  }
+  function addChoiceButtons(choices) {
+    var wrap = el("div", "choice-wrap");
+    for (var i = 0; i < choices.length; i++) {
+      (function(ch) {
+        var b = document.createElement("button");
+        b.className = "choice-btn" + (ch.cls ? " " + ch.cls : "");
+        b.textContent = ch.label;
+        b.addEventListener("click", function() {
+          wrap.remove();
+          ch.action();
+        });
+        wrap.appendChild(b);
+      })(choices[i]);
+    }
+    chatArea.appendChild(wrap);
+    scrollDown();
+  }
+
+  function showTyping(avatar) {
+    var d = el("div", "msg npc", '<div class="av">' + avatar + '</div><div class="bub"><div class="dots"><span></span><span></span><span></span></div></div>');
+    chatArea.appendChild(d); scrollDown();
+    return d;
+  }
+
+  function setChips(baseWords, hintWords, showHints) {
+    chipsEl.innerHTML = "";
+    for (var i = 0; i < baseWords.length; i++) {
+      (function(w) {
+        var b = document.createElement("button");
+        b.className = "chip";
+        b.textContent = w;
+        b.addEventListener("click", function() {
+          var cur = userInput.value;
+          userInput.value = cur + (cur && !cur.endsWith(" ") ? " " : "") + w;
+          b.classList.add("used");
+          userInput.focus();
+        });
+        chipsEl.appendChild(b);
+      })(baseWords[i]);
+    }
+    if (showHints && hintWords && hintWords.length > 0) {
+      for (var j = 0; j < hintWords.length; j++) {
+        (function(w) {
+          var b = document.createElement("button");
+          b.className = "chip hint-chip";
+          b.textContent = w;
+          b.addEventListener("click", function() {
+            var cur = userInput.value;
+            userInput.value = cur + (cur && !cur.endsWith(" ") ? " " : "") + w;
+            b.classList.add("used");
+            userInput.focus();
+          });
+          chipsEl.appendChild(b);
+        })(hintWords[j]);
+      }
+      helpsLbl.innerHTML = "&#x1F4A1; Zusatz-Hilfe!";
+    } else {
+      helpsLbl.innerHTML = "&#x1F4A1; W\u00F6rter zum Antippen";
+    }
+  }
+
+  function lockInput(lock) {
+    inputLocked = lock;
+    userInput.disabled = lock;
+    sendBtn.disabled = lock;
+    if (!lock) userInput.focus();
+  }
+
+  function showScreen(name) {
+    avatarScreen.style.display = name === "avatar" ? "flex" : "none";
+    gameScreen.style.display = name === "game" ? "flex" : "none";
+    endScreen.style.display = name === "end" ? "flex" : "none";
+  }
+
+  // ---- GAME FLOW ----
+  var waitMessages = [
+    "Du stehst vor der Schule. Ein paar Sch\u00FCler rennen an dir vorbei. Du wartest noch...",
+    "Eine Taube landet neben dir und schaut dich an. Als ob sie sagen will: \u201EGeh schon rein!\u201C \uD83D\uDC26",
+    "Du z\u00E4hlst die Fenster der Schule. 47... oder waren es 48? Hmm.",
+    "Ein Hund l\u00E4uft vorbei und wedelt mit dem Schwanz. Sogar der Hund traut sich n\u00E4her ran! \uD83D\uDC36",
+    "Der Wind weht dir ein Blatt ins Gesicht. Die Natur sagt: \u201EBeweg dich!\u201C \uD83C\uDF43",
+    "Die Schulglocke l\u00E4utet. Nochmal. Und nochmal. Sie wird ungeduldig! \uD83D\uDD14",
+    "Du hast jetzt eine Ameise beobachtet, die ein Brotkrümel tr\u00E4gt. Sehr spannend. Aber die Schule wartet! \uD83D\uDC1C",
+    "Ein Vogel singt auf dem Dach. Klingt fast wie: \u201EGeh-rein! Geh-rein!\u201C \uD83C\uDFB6",
+    "Okay, du kennst jetzt jeden Stein vor der Schule. Zeit f\u00FCr drinnen!",
+    "Sogar die Wolken formen ein Pfeil-Zeichen Richtung Eingang. Na gut, das bildest du dir ein. \u2601\uFE0F"
+  ];
+  var waitIdx = 0;
+
+  function runSchoolIntro() {
+    sceneEmojiEl.textContent = "\uD83C\uDFEB";
+    sceneLabelEl.textContent = "Vor der Schule";
+    updateProg();
+    addSceneHeader({ emoji: "\uD83C\uDFEB", label: "Vor der Schule" });
+    wait(400).then(function() {
+      addNarration("Es ist Montagmorgen. Du stehst vor deiner neuen Schule. Das Geb\u00E4ude ist gro\u00DF. Viele Kinder gehen hinein.");
+      return wait(1000);
+    }).then(function() {
+      showIntroChoices();
+    });
+  }
+
+  function showIntroChoices() {
+    lockInput(true);
+    setChips([], [], false);
+    helpsLbl.innerHTML = "";
+    addChoiceButtons([
+      {
+        label: "\uD83D\uDEAA Geh durch den Eingang in die Schule",
+        action: function() {
+          addNarration("Du holst tief Luft und gehst durch die T\u00FCr. Drin ist es warm und es riecht nach Schule.");
+          wait(1200).then(function() {
+            startScene();
+          });
+        }
+      },
+      {
+        label: "\u23F3 Warte noch...",
+        cls: "sec",
+        action: function() {
+          var msg = waitMessages[waitIdx % waitMessages.length];
+          waitIdx++;
+          addNarration(msg);
+          wait(800).then(function() {
+            showIntroChoices();
+          });
+        }
+      }
+    ]);
+  }
+
+  function startGame() {
+    SCENES = buildScenes();
+    sceneIdx = 0; stepIdx = 0; totalMsgs = 0; inputLocked = false; attempts = 0; totalChecks = 0; firstTryPasses = 0;
+    waitIdx = 0;
+    chatArea.innerHTML = "";
+    showScreen("game");
+    runSchoolIntro();
+  }
+
+  function startScene() {
+    var scene = SCENES[sceneIdx];
+    sceneEmojiEl.textContent = scene.emoji;
+    sceneLabelEl.textContent = scene.label;
+    updateProg();
+    addSceneHeader(scene);
+    if (scene.intro) {
+      addNarration(scene.intro);
+    }
+    wait(800).then(function() { startStep(); });
+  }
+
+  function startStep() {
+    var scene = SCENES[sceneIdx];
+    var step = scene.steps[stepIdx];
+    if (!step) return;
+
+    attempts = 0;
+
+    // Auto-pass steps (narration only)
+    if (step.autoPass) {
+      lockInput(true);
+      var txt = typeof step.npcText === "function" ? step.npcText() : step.npcText;
+      var typ = showTyping(scene.npcAvatar);
+      wait(800).then(function() {
+        typ.remove();
+        addNpc(txt, scene.npcName, scene.npcAvatar);
+        if (step.afterPass) {
+          var extras = step.afterPass();
+          return showExtras(extras, 0);
+        }
+      }).then(function() {
+        return wait(800);
+      }).then(function() {
+        advanceStep();
+      });
+      return;
+    }
+
+    lockInput(true);
+    var npcName = step.npcNameOverride || scene.npcName;
+    var npcAvatar = step.npcAvatarOverride || scene.npcAvatar;
+    var npcText = step.npcTextFn ? step.npcTextFn() : (typeof step.npcText === "function" ? step.npcText() : step.npcText);
+
+    var p = Promise.resolve();
+    if (step.narrateBefore) {
+      p = p.then(function() {
+        addNarration(step.narrateBefore);
+        return wait(800);
+      });
+    }
+    p.then(function() {
+      var typ2 = showTyping(npcAvatar);
+      return wait(800 + Math.random() * 400).then(function() {
+        typ2.remove();
+        addNpc(npcText, npcName, npcAvatar);
+        setChips(step.baseChips, step.hintChips, false);
+        userInput.placeholder = step.placeholder;
+        userInput.value = "";
+        lockInput(false);
+      });
+    });
+  }
+
+  function showExtras(extras, idx) {
+    if (idx >= extras.length) return Promise.resolve();
+    var item = extras[idx];
+    return wait(600).then(function() {
+      if (item.type === "narr") {
+        addNarration(item.text);
+      } else if (item.type === "npc") {
+        addNpc(item.text, item.name, item.avatar);
+      }
+      return showExtras(extras, idx + 1);
+    });
+  }
+
+  function doSend() {
+    if (inputLocked) return;
+    var text = userInput.value.trim();
+    if (!text) return;
+    var scene = SCENES[sceneIdx];
+    var step = scene.steps[stepIdx];
+    addPlayer(text);
+    totalMsgs++;
+    userInput.value = "";
+    lockInput(true);
+
+    var result = step.check(text);
+    attempts++;
+
+    if (result.pass) {
+      // Success! Track first-try accuracy
+      totalChecks++;
+      if (attempts === 1) firstTryPasses++;
+      var sNpcName = step.npcNameOverride || scene.npcName;
+      var sNpcAvatar = step.npcAvatarOverride || scene.npcAvatar;
+      wait(300).then(function() {
+        if (result.npcReply) {
+          addNpc(result.npcReply, sNpcName, sNpcAvatar);
+        }
+        addSuccess("\u2705 Weiter geht's!");
+        if (step.afterPass) {
+          var extras = step.afterPass();
+          return showExtras(extras, 0);
+        }
+      }).then(function() {
+        return wait(800);
+      }).then(function() {
+        advanceStep();
+      });
+    } else {
+      // Stumbling block: NPC asks again
+      var rNpcName = step.npcNameOverride || scene.npcName;
+      var rNpcAvatar = step.npcAvatarOverride || scene.npcAvatar;
+
+      if (result.secretaryHelp) {
+        // Secretary helps with correct greeting
+        var typ = showTyping(scene.npcAvatar);
+        wait(800).then(function() {
+          typ.remove();
+          addNpc("Psst, " + player.firstName + "! Das ist der Direktor. Sag lieber: Gr\u00FC\u00DF Gott! oder Guten Tag!", scene.npcName, scene.npcAvatar);
+          if (attempts >= 1) {
+            setChips(step.baseChips, step.hintChips, true);
+          }
+          userInput.value = "";
+          lockInput(false);
+        });
+      } else {
+        var typ = showTyping(rNpcAvatar);
+        wait(800).then(function() {
+          typ.remove();
+          addNpc(result.npcReply, rNpcName, rNpcAvatar);
+          if (attempts >= 1) {
+            setChips(step.baseChips, step.hintChips, true);
+          }
+          userInput.value = "";
+          lockInput(false);
+        });
+      }
+    }
+  }
+
+  function advanceStep() {
+    var scene = SCENES[sceneIdx];
+    stepIdx++;
+    updateProg();
+    if (stepIdx >= scene.steps.length) {
+      finishScene();
+    } else {
+      startStep();
+    }
+  }
+
+  function finishScene() {
+    var scene = SCENES[sceneIdx];
+    var outro = typeof scene.outro === "function" ? scene.outro() : scene.outro;
+    var p;
+    if (outro) {
+      p = wait(400).then(function() {
+        addNarration(outro);
+        return wait(1500);
+      });
+    } else {
+      p = wait(600);
+    }
+    if (scene.afterOutro) {
+      p = p.then(function() {
+        return showExtras(scene.afterOutro(), 0);
+      }).then(function() {
+        return wait(1200);
+      });
+    }
+    p.then(function() {
+      // Insert branch scene dynamically after a branching scene
+      if (scene.branch) {
+        var branchScene = buildBranchScene();
+        SCENES.splice(sceneIdx + 1, 0, branchScene);
+      }
+      sceneIdx++;
+      stepIdx = 0;
+      if (sceneIdx >= SCENES.length) {
+        finishGame();
+      } else {
+        startScene();
+      }
+    });
+  }
+
+  function finishGame() {
+    updateProg();
+    showScreen("end");
+    var pct = totalChecks > 0 ? Math.round((firstTryPasses / totalChecks) * 100) : 0;
+    var msg;
+    if (pct >= 80) {
+      msg = "Wow, " + player.firstName + "! Du hast fast alles beim ersten Versuch geschafft. Toll gemacht!";
+    } else if (pct >= 50) {
+      msg = "Gut gemacht, " + player.firstName + "! Du lernst schnell. Weiter so!";
+    } else {
+      msg = "Super, " + player.firstName + "! Du hast deinen ersten Tag geschafft. \u00DCbung macht den Meister!";
+    }
+    document.getElementById("endText").textContent = msg;
+    document.getElementById("sScore").textContent = pct + "%";
+    document.getElementById("sScenes").textContent = SCENES.length;
+    document.getElementById("sMsgs").textContent = totalMsgs;
+  }
+
+  // ---- EVENTS ----
+  document.getElementById("restartBtn").addEventListener("click", function() {
+    showScreen("avatar");
+  });
+  sendBtn.addEventListener("click", function() { doSend(); });
+  userInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); doSend(); }
+  });
+
+})();
+</script>
+</body>
+</html>
